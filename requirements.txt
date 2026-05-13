@@ -1,0 +1,7 @@
+torch>=2.0.0
+recbole>=1.2.0
+pandas>=1.5.0
+numpy<2.0
+matplotlib>=3.5.0
+pyyaml>=6.0
+tensorboard>=2.10.0

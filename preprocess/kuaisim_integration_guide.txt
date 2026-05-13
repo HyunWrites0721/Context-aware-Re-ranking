@@ -1,0 +1,211 @@
+================================================================
+MicroLens-100k × KuaiSim 연동 가이드
+================================================================
+
+[설계 원칙]
+  - ML-1m → KuaiSim 연동과 동일한 방식 사용
+  - comment(implicit positive) → is_click=1, is_comment=1, long_view=1
+  - session 단위: 하루(daily split) — ML-1m과 동일
+  - 없는 필드(is_like 등)는 0으로 채워 KuaiRand-Pure 스키마 유지
+
+================================================================
+STEP 0. 사전 준비
+================================================================
+
+필요한 패키지:
+  pip install pandas numpy scikit-learn
+
+KuaiSim 저장소 클론 (아직 안 했다면):
+  git clone https://github.com/Applied-Machine-Learning-Lab/KuaiSim.git
+  cd KuaiSim
+
+KuaiRand-Pure 데이터 다운로드 (KuaiSim 기본 데이터, 비교 실험용으로도 필요):
+  → https://kuairand.com/ 에서 KuaiRand-Pure 신청 후 다운로드
+  → KuaiSim/data/KuaiRand-Pure/ 에 압축 해제
+
+================================================================
+STEP 1. MicroLens-100k 전처리 실행
+================================================================
+
+기본 실행 (item feature 없이):
+  python preprocess/microlens_to_kuaisim.py \
+      --data_path /path/to/MicroLens-100k_pairs.csv \
+      --output_dir /path/to/KuaiSim/data/MicroLens-KuaiSim
+
+modality feature 있는 경우 (tag 필드에 K-means 클러스터 레이블 부여):
+  python preprocess/microlens_to_kuaisim.py \
+      --data_path /path/to/MicroLens-100k_pairs.csv \
+      --modality_feat_path /path/to/extracted_modality_features.csv \
+      --output_dir /path/to/KuaiSim/data/MicroLens-KuaiSim
+
+생성되는 파일:
+  data/MicroLens-KuaiSim/
+  ├── log_microlens.csv              (상호작용 로그, ~719K 행)
+  ├── user_features_microlens.csv    (사용자 특성, ~100K 행)
+  └── video_features_microlens.csv  (아이템 특성, ~19.7K 행)
+
+출력 컬럼 확인 (KuaiRand-Pure와 동일 스키마):
+  log           : user_id, video_id, date, hourmin, time_ms,
+                  is_click, is_like, is_follow, is_comment,
+                  is_forward, is_hate, long_view, is_profile_enter,
+                  is_rand, play_time_ms, duration_ms,
+                  profile_stay_time, comment_stay_time, tab
+  user_features : user_id, user_active_degree, is_lowactive_period,
+                  is_live_streamer, is_video_author, follow_user_num_range,
+                  fans_user_num_range, friend_user_num_range,
+                  register_days_range, onehot_feat0 ~ onehot_feat17
+  video_features: video_id, author_id, video_type, upload_dt, upload_type,
+                  visible_status, video_duration, server_width,
+                  server_height, music_id, music_type, tag
+
+================================================================
+STEP 2. KuaiSim 설정 파일 수정
+================================================================
+
+KuaiSim의 데이터 경로 설정은 두 곳 중 하나에 있다:
+  (a) code/configs/ 아래의 YAML 파일
+  (b) code/reader/KuaiRandDataReader.py 내 하드코딩 경로
+
+---- (a) YAML 방식인 경우 ----
+
+KuaiRand 실험용 config를 복사해서 MicroLens용으로 만든다:
+  cp code/configs/KuaiRand_wholesession.yaml \
+     code/configs/MicroLens_wholesession.yaml
+
+수정할 항목 (MicroLens_wholesession.yaml):
+  # 데이터 경로
+  log_file: data/MicroLens-KuaiSim/log_microlens.csv
+  user_feature_file: data/MicroLens-KuaiSim/user_features_microlens.csv
+  video_feature_file: data/MicroLens-KuaiSim/video_features_microlens.csv
+
+  # 아이템/유저 수 (KuaiRand-Pure와 다름)
+  n_users: 100000
+  n_items: 19738
+
+  # 실험 이름
+  env_name: MicroLens_WholeSesssion
+
+---- (b) 하드코딩 방식인 경우 ----
+
+KuaiRandDataReader.py (또는 유사 파일)에서 경로 문자열을 찾아 교체:
+  # 기존
+  "data/KuaiRand-Pure/log_random_4_22_to_5_08_pure.csv"
+  # 변경
+  "data/MicroLens-KuaiSim/log_microlens.csv"
+
+  # 기존
+  "data/KuaiRand-Pure/user_features_pure.csv"
+  # 변경
+  "data/MicroLens-KuaiSim/user_features_microlens.csv"
+
+  # 기존
+  "data/KuaiRand-Pure/video_features_basic_pure.csv"
+  # 변경
+  "data/MicroLens-KuaiSim/video_features_microlens.csv"
+
+경로 검색 명령:
+  grep -rn "KuaiRand-Pure\|log_random\|user_features_pure\|video_features_basic" \
+       code/ --include="*.py" --include="*.yaml"
+
+================================================================
+STEP 3. KuaiSim user response model 재학습
+================================================================
+
+KuaiSim의 UIRM(User Immediate Response Model)은 KuaiRand 데이터로
+사전학습된 상태이므로, microLens 데이터로 재학습해야 한다.
+
+KuaiSim이 제공하는 user response model 학습 스크립트 실행:
+  bash scripts/train_user_model.sh  # 또는 이에 해당하는 스크립트
+
+  스크립트 내 dataset 경로를 STEP 2에서 수정한 경로로 지정할 것.
+
+재학습 후 체크포인트 경로를 RL 학습 config에 반영:
+  user_model_checkpoint: checkpoints/user_model_microlens.pth
+
+================================================================
+STEP 4. KuaiSim 환경에서 RL 에이전트 학습 실행
+================================================================
+
+KuaiSim + MicroLens 환경으로 whole-session 실험:
+  bash scripts/train_ddpg_wholesession.sh  (또는 MicroLens용 config 지정)
+
+  예시:
+  python code/train.py --config code/configs/MicroLens_wholesession.yaml
+
+Retention 최적화 실험:
+  python code/train.py \
+      --config code/configs/MicroLens_wholesession.yaml \
+      --reward_type retention   # immediate+retention 합산
+
+================================================================
+STEP 5. 포맷 검증 (실행 전 빠른 체크)
+================================================================
+
+아래 명령으로 생성된 파일이 올바른지 확인:
+
+  python - << 'EOF'
+  import pandas as pd
+
+  log = pd.read_csv('data/MicroLens-KuaiSim/log_microlens.csv')
+  usr = pd.read_csv('data/MicroLens-KuaiSim/user_features_microlens.csv')
+  vid = pd.read_csv('data/MicroLens-KuaiSim/video_features_microlens.csv')
+
+  print("=== log ===")
+  print(log.dtypes)
+  print(log.head(3))
+
+  print("\n=== user_features ===")
+  print(usr.dtypes)
+  print(usr.head(3))
+
+  print("\n=== video_features ===")
+  print(vid.dtypes)
+  print(vid.head(3))
+
+  # 기대값
+  assert log['is_click'].mean() == 1.0,   "is_click must be all 1"
+  assert log['is_comment'].mean() == 1.0, "is_comment must be all 1"
+  assert log['is_hate'].max() == 0,       "is_hate must be all 0"
+  assert set(usr.columns[:9]) == {
+      'user_id', 'user_active_degree', 'is_lowactive_period',
+      'is_live_streamer', 'is_video_author', 'follow_user_num_range',
+      'fans_user_num_range', 'friend_user_num_range', 'register_days_range'
+  }
+  print("\n[OK] Format validation passed.")
+  EOF
+
+================================================================
+STEP 6. 연동 후 알아둘 제약사항
+================================================================
+
+1. is_hate = 0 고정
+   microLens에는 negative signal이 없어서 KuaiSim의 Leave Module이
+   patience decay를 거의 발동시키지 않는다. 즉, 시뮬레이션에서
+   세션이 실제보다 길게 유지되는 경향이 있다.
+   → 완화 방법: Leave Module의 threshold를 낮추거나,
+     비상호작용 아이템 샘플을 negative(is_hate=1)로 소수 주입.
+
+2. long_view = 1 고정
+   모든 interaction이 long_view=1이므로 UIRM의 long_view 예측이
+   항상 높게 편향된다. 재현 목적보다 상대 비교(ablation) 목적에는
+   문제없음.
+
+3. play_time_ms = 0
+   KuaiSim이 시청 시간을 reward 계산에 직접 쓰는 경우 0으로 채워진
+   값이 immediate reward를 과소평가할 수 있다.
+   → 필요시 video_duration의 일정 비율(예: 0.8)로 대체 가능.
+
+4. user/video feature의 0 패딩
+   KuaiSim 모델이 해당 feature를 임베딩으로 쓰는 경우, 모든 유저가
+   동일한 feature 값을 가져 개인화 성능이 저하될 수 있다.
+   → user_active_degree, register_days_range는 실제 값으로 채워지므로
+     최소한의 개인화는 유지됨.
+
+================================================================
+참고
+================================================================
+  KuaiSim 논문   : https://arxiv.org/abs/2309.12645
+  KuaiSim GitHub : https://github.com/Applied-Machine-Learning-Lab/KuaiSim
+  KuaiRand 데이터: https://kuairand.com/
+  MicroLens      : https://github.com/westlake-repl/MicroLens
+================================================================
