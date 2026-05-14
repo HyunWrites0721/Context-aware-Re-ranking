@@ -34,11 +34,12 @@ def load_interactions(csv_path: str) -> pd.DataFrame:
 
 
 def parse_timestamps(df: pd.DataFrame) -> pd.DataFrame:
-    dt = pd.to_datetime(df['timestamp'], unit='s', utc=True).dt.tz_localize(None)
+    # Timestamps in MicroLens-100k are in milliseconds, not seconds
+    dt = pd.to_datetime(df['timestamp'], unit='ms', utc=True).dt.tz_localize(None)
     df['datetime'] = dt
     df['date'] = dt.dt.strftime('%Y%m%d').astype(int)
     df['hourmin'] = dt.dt.hour * 100 + dt.dt.minute
-    df['time_ms'] = (df['timestamp'] * 1000).astype(int)
+    df['time_ms'] = df['timestamp'].astype(int)
     return df
 
 
@@ -85,13 +86,14 @@ def build_user_features(df: pd.DataFrame) -> pd.DataFrame:
     feats = counts.to_frame().join(span.rename('span_days'))
 
     # user_active_degree: 5-quantile of interaction count (0=least active … 4=most)
+    # use rank-based cut to avoid bin edge collapse on skewed distributions
     feats['user_active_degree'] = pd.qcut(
-        feats['n_interactions'], q=5, labels=[0, 1, 2, 3, 4], duplicates='drop'
+        feats['n_interactions'].rank(method='first'), q=5, labels=[0, 1, 2, 3, 4]
     ).astype(int)
 
     # register_days_range: proxy from activity span quartile
     feats['register_days_range'] = pd.qcut(
-        feats['span_days'], q=4, labels=[0, 1, 2, 3], duplicates='drop'
+        feats['span_days'].rank(method='first'), q=4, labels=[0, 1, 2, 3]
     ).astype(int)
 
     for col in [
