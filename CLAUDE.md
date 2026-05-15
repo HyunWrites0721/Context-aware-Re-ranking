@@ -67,10 +67,15 @@ LTV/
 │   └── MicroLens-100k_pairs.csv     # 원본 user-item pair 데이터
 ├── checkpoints/
 │   ├── SASRec-May-13-2026_10-28-13.pth   # 1차 학습 체크포인트
-│   └── SASRec-May-14-2026_03-10-45.pth   # 2차 학습 체크포인트 (최종)
+│   ├── SASRec-May-14-2026_03-10-45.pth   # 2차 학습 체크포인트
+│   └── SASRec-May-15-2026_06-53-10.pth   # 3차 학습 체크포인트 (최종)
+├── figures/                         # 실험별 학습 곡선 PNG (로그 파일명 기반)
+│   ├── SASRec-microlens100k-May-14-2026_03-10-29-dffa9c.png
+│   └── SASRec-microlens100k-May-15-2026_06-52-54-c18cd4.png
 ├── log/SASRec/
 │   ├── SASRec-microlens100k-May-13-2026_10-27-57-87557e.log   # 1차 학습 로그
-│   └── SASRec-microlens100k-May-14-2026_03-10-29-dffa9c.log   # 2차 학습 로그
+│   ├── SASRec-microlens100k-May-14-2026_03-10-29-dffa9c.log   # 2차 학습 로그
+│   └── SASRec-microlens100k-May-15-2026_06-52-54-c18cd4.log   # 3차 학습 로그
 ├── log_tensorboard/                 # TensorBoard 이벤트 파일
 ├── preprocess/
 │   ├── microlens_to_kuaisim.py      # microLens → KuaiSim 변환 스크립트
@@ -86,16 +91,23 @@ LTV/
 |------|-------|---------|-------|---------|
 | SASRec (IDRec) | 0.0909 | **0.0517** | 0.1278 | 0.0610 |
 
-현재 학습 결과 (2차, 100 epoch):
+실험 이력:
+
+| 실험 | 설정 | Best Valid NDCG@10 | Test NDCG@10 | 논문 대비 |
+|------|------|-------------------|--------------|---------|
+| 2차 (May 14) | Adam→AdamW, LR=1e-5, WD=0.1, inner=256 | 0.0376 | 0.0273 | 52.8% |
+| 3차 (May 15) | AdamW, LR=1e-4, WD=0.01, inner=2048 | 0.0423 | 0.0301 | 58.2% |
+
+현재 최고 결과 (3차, inner_size=2048):
 
 | 지표 | Best Valid | Test |
 |------|-----------|------|
-| HR@10 | 0.0697 | 0.0507 |
-| NDCG@10 | 0.0376 | 0.0273 |
-| HR@20 | 0.0960 | 0.0728 |
-| NDCG@20 | 0.0442 | 0.0328 |
+| HR@10 | 0.0750 | 0.0544 |
+| NDCG@10 | 0.0423 | 0.0301 |
+| HR@20 | 0.1021 | 0.0779 |
+| NDCG@20 | 0.0491 | 0.0361 |
 
-→ Test NDCG@10 기준 논문 대비 약 **52.8%** 수준 (0.0273 / 0.0517)
+→ Test NDCG@10 기준 논문 대비 약 **58.2%** 수준 (0.0301 / 0.0517)
 
 ## Ablation Study
 
