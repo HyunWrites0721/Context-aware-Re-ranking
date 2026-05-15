@@ -1,12 +1,15 @@
 import re
+import sys
+from datetime import datetime
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
 
-LOG_PATH = "./log/SASRec/SASRec-microlens100k-May-14-2026_03-10-29-dffa9c.log"
-OUTPUT_PATH = "./learning_curves.png"
+LOG_PATH = sys.argv[1] if len(sys.argv) > 1 else "./log/SASRec/SASRec-microlens100k-May-15-2026_06-52-54-c18cd4.log"
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+OUTPUT_PATH = f"./learning_curves_{timestamp}.png"
 
 # ── parse ──────────────────────────────────────────────────────────────────
 train_loss_pattern = re.compile(r"epoch (\d+) training \[time: .+, train loss: ([\d.]+)\]")
@@ -28,8 +31,8 @@ with open(LOG_PATH) as f:
             eval_scores.append(float(m.group(2)))
 
 # reported final metrics
-best_valid = {"hit@10": 0.0697, "hit@20": 0.0960, "ndcg@10": 0.0376, "ndcg@20": 0.0442}
-test_result = {"hit@10": 0.0507, "hit@20": 0.0728, "ndcg@10": 0.0273, "ndcg@20": 0.0328}
+best_valid = {"hit@10": 0.0750, "hit@20": 0.1021, "ndcg@10": 0.0423, "ndcg@20": 0.0491}
+test_result = {"hit@10": 0.0544, "hit@20": 0.0779, "ndcg@10": 0.0301, "ndcg@20": 0.0361}
 
 # paper reference (Table 2, SASRec IDRec)
 paper_ndcg10 = 0.0517

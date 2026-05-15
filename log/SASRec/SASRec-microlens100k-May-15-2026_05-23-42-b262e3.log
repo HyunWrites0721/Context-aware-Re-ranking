@@ -1,0 +1,188 @@
+Fri 15 May 2026 05:23:42 INFO  ['train_sasrec.py']
+Fri 15 May 2026 05:23:42 INFO  
+General Hyper Parameters:
+gpu_id = 0
+use_gpu = True
+seed = 2020
+state = INFO
+reproducibility = True
+data_path = ./dataset/microlens100k
+checkpoint_dir = ./checkpoints/
+show_progress = True
+save_dataset = False
+dataset_save_path = None
+save_dataloaders = False
+dataloaders_save_path = None
+log_wandb = False
+
+Training Hyper Parameters:
+epochs = 100
+train_batch_size = 512
+learner = adamw
+learning_rate = 0.0001
+train_neg_sample_args = {'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}
+eval_step = 5
+stopping_step = 5
+clip_grad_norm = None
+weight_decay = 0.01
+loss_decimal_place = 4
+
+Evaluation Hyper Parameters:
+eval_args = {'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}
+repeatable = True
+metrics = ['Hit', 'NDCG']
+topk = [10, 20]
+valid_metric = NDCG@10
+valid_metric_bigger = True
+eval_batch_size = 2048
+metric_decimal_place = 4
+
+Dataset Hyper Parameters:
+field_separator = 	
+seq_separator =  
+USER_ID_FIELD = user_id
+ITEM_ID_FIELD = item_id
+RATING_FIELD = rating
+TIME_FIELD = timestamp
+seq_len = None
+LABEL_FIELD = label
+threshold = None
+NEG_PREFIX = neg_
+load_col = {'inter': ['user_id', 'item_id', 'timestamp']}
+unload_col = None
+unused_col = None
+additional_feat_suffix = None
+rm_dup_inter = None
+val_interval = None
+filter_inter_by_user_or_item = True
+user_inter_num_interval = [0,inf)
+item_inter_num_interval = [0,inf)
+alias_of_user_id = None
+alias_of_item_id = None
+alias_of_entity_id = None
+alias_of_relation_id = None
+preload_weight = None
+normalize_field = None
+normalize_all = None
+ITEM_LIST_LENGTH_FIELD = item_length
+LIST_SUFFIX = _list
+MAX_ITEM_LIST_LENGTH = 13
+POSITION_FIELD = position_id
+HEAD_ENTITY_ID_FIELD = head_id
+TAIL_ENTITY_ID_FIELD = tail_id
+RELATION_ID_FIELD = relation_id
+ENTITY_ID_FIELD = entity_id
+benchmark_filename = None
+
+Other Hyper Parameters: 
+worker = 0
+wandb_project = recbole
+shuffle = True
+require_pow = False
+enable_amp = False
+enable_scaler = False
+transform = None
+n_layers = 2
+n_heads = 2
+hidden_size = 2048
+inner_size = 256
+hidden_dropout_prob = 0.1
+attn_dropout_prob = 0.1
+hidden_act = gelu
+layer_norm_eps = 1e-12
+initializer_range = 0.02
+loss_type = CE
+numerical_features = []
+discretization = None
+kg_reverse_r = False
+entity_kg_num_interval = [0,inf)
+relation_kg_num_interval = [0,inf)
+MODEL_TYPE = ModelType.SEQUENTIAL
+state_tracker = ['Tensorboard']
+MODEL_INPUT_TYPE = InputType.POINTWISE
+eval_type = EvaluatorType.RANKING
+single_spec = True
+local_rank = 0
+device = cuda
+valid_neg_sample_args = {'distribution': 'uniform', 'sample_num': 'none'}
+test_neg_sample_args = {'distribution': 'uniform', 'sample_num': 'none'}
+
+
+Fri 15 May 2026 05:23:44 INFO  microlens100k
+The number of users: 100001
+Average actions of users: 7.19405
+The number of items: 19739
+Average actions of items: 36.44771506738272
+The number of inters: 719405
+The sparsity of the dataset: 99.96355449587001%
+Remain Fields: ['user_id', 'item_id', 'timestamp']
+Fri 15 May 2026 05:23:56 INFO  [Training]: train_batch_size = [512] train_neg_sample_args: [{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}]
+Fri 15 May 2026 05:23:56 INFO  [Evaluation]: eval_batch_size = [2048] eval_args: [{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}]
+Fri 15 May 2026 05:23:57 INFO  SASRec(
+  (item_embedding): Embedding(19739, 2048, padding_idx=0)
+  (position_embedding): Embedding(13, 2048)
+  (trm_encoder): TransformerEncoder(
+    (layer): ModuleList(
+      (0-1): 2 x TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=2048, out_features=2048, bias=True)
+          (key): Linear(in_features=2048, out_features=2048, bias=True)
+          (value): Linear(in_features=2048, out_features=2048, bias=True)
+          (softmax): Softmax(dim=-1)
+          (attn_dropout): Dropout(p=0.1, inplace=False)
+          (dense): Linear(in_features=2048, out_features=2048, bias=True)
+          (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=2048, out_features=256, bias=True)
+          (dense_2): Linear(in_features=256, out_features=2048, bias=True)
+          (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+  (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (loss_fct): CrossEntropyLoss()
+)
+Trainable parameters: 76145152
+Fri 15 May 2026 05:23:57 INFO  FLOPs: 463794104.0
+Fri 15 May 2026 05:27:38 INFO  epoch 0 training [time: 219.81s, train loss: 7783.4524]
+Fri 15 May 2026 05:31:18 INFO  epoch 1 training [time: 219.62s, train loss: 7056.9167]
+Fri 15 May 2026 05:34:57 INFO  epoch 2 training [time: 219.55s, train loss: 6458.1743]
+Fri 15 May 2026 05:38:36 INFO  epoch 3 training [time: 219.10s, train loss: 6035.7410]
+Fri 15 May 2026 05:42:15 INFO  epoch 4 training [time: 219.20s, train loss: 5592.8435]
+Fri 15 May 2026 05:42:31 INFO  epoch 4 evaluating [time: 15.56s, valid_score: 0.037200]
+Fri 15 May 2026 05:42:31 INFO  valid result: 
+hit@10 : 0.0767    hit@20 : 0.1102    ndcg@10 : 0.0372    ndcg@20 : 0.0456
+Fri 15 May 2026 05:42:32 INFO  Saving current: ./checkpoints/SASRec-May-15-2026_05-23-57.pth
+Fri 15 May 2026 05:46:11 INFO  epoch 5 training [time: 219.30s, train loss: 5122.1992]
+Fri 15 May 2026 05:49:51 INFO  epoch 6 training [time: 219.20s, train loss: 4685.7816]
+Fri 15 May 2026 05:53:30 INFO  epoch 7 training [time: 219.48s, train loss: 4296.4892]
+Fri 15 May 2026 05:57:10 INFO  epoch 8 training [time: 219.76s, train loss: 3942.9229]
+Fri 15 May 2026 06:00:49 INFO  epoch 9 training [time: 219.56s, train loss: 3620.6328]
+Fri 15 May 2026 06:01:05 INFO  epoch 9 evaluating [time: 15.43s, valid_score: 0.037000]
+Fri 15 May 2026 06:01:05 INFO  valid result: 
+hit@10 : 0.0704    hit@20 : 0.098    ndcg@10 : 0.037    ndcg@20 : 0.0439
+Fri 15 May 2026 06:04:44 INFO  epoch 10 training [time: 218.97s, train loss: 3327.8539]
+Fri 15 May 2026 06:08:23 INFO  epoch 11 training [time: 219.03s, train loss: 3063.5294]
+Fri 15 May 2026 06:12:02 INFO  epoch 12 training [time: 219.24s, train loss: 2828.5787]
+Fri 15 May 2026 06:15:41 INFO  epoch 13 training [time: 219.30s, train loss: 2625.8392]
+Fri 15 May 2026 06:19:21 INFO  epoch 14 training [time: 219.17s, train loss: 2445.5078]
+Fri 15 May 2026 06:19:36 INFO  epoch 14 evaluating [time: 15.46s, valid_score: 0.037500]
+Fri 15 May 2026 06:19:36 INFO  valid result: 
+hit@10 : 0.0676    hit@20 : 0.0934    ndcg@10 : 0.0375    ndcg@20 : 0.0441
+Fri 15 May 2026 06:19:37 INFO  Saving current: ./checkpoints/SASRec-May-15-2026_05-23-57.pth
+Fri 15 May 2026 06:23:16 INFO  epoch 15 training [time: 219.17s, train loss: 2286.4493]
+Fri 15 May 2026 06:26:56 INFO  epoch 16 training [time: 219.26s, train loss: 2147.6982]
+Fri 15 May 2026 06:30:35 INFO  epoch 17 training [time: 219.44s, train loss: 2028.1228]
+Fri 15 May 2026 06:34:14 INFO  epoch 18 training [time: 219.26s, train loss: 1920.1694]
+Fri 15 May 2026 06:37:54 INFO  epoch 19 training [time: 219.50s, train loss: 1819.4034]
+Fri 15 May 2026 06:38:09 INFO  epoch 19 evaluating [time: 15.48s, valid_score: 0.037400]
+Fri 15 May 2026 06:38:09 INFO  valid result: 
+hit@10 : 0.0657    hit@20 : 0.0898    ndcg@10 : 0.0374    ndcg@20 : 0.0435
+Fri 15 May 2026 06:41:49 INFO  epoch 20 training [time: 219.43s, train loss: 1733.8632]
+Fri 15 May 2026 06:45:28 INFO  epoch 21 training [time: 219.23s, train loss: 1655.0770]
+Fri 15 May 2026 06:49:08 INFO  epoch 22 training [time: 219.74s, train loss: 1587.9902]
