@@ -43,6 +43,60 @@ Context-aware 추천 시스템을 통해 사용자 retention을 최적화하는 
   - `retention_reward`: 장기적 사용자 잔존율 기반 보상
 - 두 보상을 결합하여 단기 만족과 장기 retention을 동시에 최적화
 
+## 프로젝트 파일 구조
+
+아래 구조는 항상 최신 상태로 유지한다. **파일이나 디렉토리를 새로 생성하거나 삭제할 때마다 반드시 이 섹션을 업데이트한다.**
+
+```
+LTV/
+├── CLAUDE.md                        # 프로젝트 지침 (이 파일)
+├── microlens_paper.pdf              # MicroLens 원본 논문 (벤치마크 수치 참조용)
+├── requirements.txt                 # Python 의존성
+├── train_sasrec.py                  # SASRec 학습 진입점
+├── recbole_SASRec.ipynb             # SASRec 실험용 Jupyter 노트북
+├── plot_learning_curves.py          # 학습 곡선 시각화 스크립트
+├── learning_curves.png              # 학습 곡선 출력 이미지
+├── baseline_param_settings.png      # 논문 하이퍼파라미터 설정 스크린샷
+├── baseline_performance.png         # 논문 baseline 성능 스크린샷
+├── config/
+│   └── sasrec_microlens.yaml        # SASRec 학습 설정 파일
+├── dataset/
+│   └── microlens100k/
+│       └── microlens100k.inter      # RecBole 포맷 interaction 데이터
+├── data/
+│   └── MicroLens-100k_pairs.csv     # 원본 user-item pair 데이터
+├── checkpoints/
+│   ├── SASRec-May-13-2026_10-28-13.pth   # 1차 학습 체크포인트
+│   └── SASRec-May-14-2026_03-10-45.pth   # 2차 학습 체크포인트 (최종)
+├── log/SASRec/
+│   ├── SASRec-microlens100k-May-13-2026_10-27-57-87557e.log   # 1차 학습 로그
+│   └── SASRec-microlens100k-May-14-2026_03-10-29-dffa9c.log   # 2차 학습 로그
+├── log_tensorboard/                 # TensorBoard 이벤트 파일
+├── preprocess/
+│   ├── microlens_to_kuaisim.py      # microLens → KuaiSim 변환 스크립트
+│   └── kuaisim_integration_guide.txt
+└── kuaisim_setup_status.md          # KuaiSim 세팅 진행 상황 메모
+```
+
+## 논문 벤치마크 수치 (MicroLens-100K, SASRec IDRec)
+
+`microlens_paper.pdf` Table 2 기준:
+
+| 모델 | HR@10 | NDCG@10 | HR@20 | NDCG@20 |
+|------|-------|---------|-------|---------|
+| SASRec (IDRec) | 0.0909 | **0.0517** | 0.1278 | 0.0610 |
+
+현재 학습 결과 (2차, 100 epoch):
+
+| 지표 | Best Valid | Test |
+|------|-----------|------|
+| HR@10 | 0.0697 | 0.0507 |
+| NDCG@10 | 0.0376 | 0.0273 |
+| HR@20 | 0.0960 | 0.0728 |
+| NDCG@20 | 0.0442 | 0.0328 |
+
+→ Test NDCG@10 기준 논문 대비 약 **52.8%** 수준 (0.0273 / 0.0517)
+
 ## Ablation Study
 
 모델 각 구성 요소의 기여도를 검증하기 위해 아래 세 가지 축으로 ablation study를 수행한다.

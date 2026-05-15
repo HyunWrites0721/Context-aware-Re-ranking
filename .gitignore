@@ -1,0 +1,9 @@
+# Model checkpoints (large binary files)
+checkpoints/
+*.pth
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/

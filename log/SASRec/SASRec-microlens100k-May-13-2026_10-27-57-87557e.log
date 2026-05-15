@@ -1,0 +1,289 @@
+Wed 13 May 2026 10:27:57 INFO  ['train_sasrec.py']
+Wed 13 May 2026 10:27:57 INFO  
+General Hyper Parameters:
+gpu_id = 0
+use_gpu = True
+seed = 2020
+state = INFO
+reproducibility = True
+data_path = ./dataset/microlens100k
+checkpoint_dir = ./checkpoints/
+show_progress = True
+save_dataset = False
+dataset_save_path = None
+save_dataloaders = False
+dataloaders_save_path = None
+log_wandb = False
+
+Training Hyper Parameters:
+epochs = 100
+train_batch_size = 512
+learner = adam
+learning_rate = 1e-05
+train_neg_sample_args = {'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}
+eval_step = 5
+stopping_step = 10
+clip_grad_norm = None
+weight_decay = 0.1
+loss_decimal_place = 4
+
+Evaluation Hyper Parameters:
+eval_args = {'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}
+repeatable = True
+metrics = ['Hit', 'NDCG']
+topk = [10, 20]
+valid_metric = NDCG@10
+valid_metric_bigger = True
+eval_batch_size = 2048
+metric_decimal_place = 4
+
+Dataset Hyper Parameters:
+field_separator = 	
+seq_separator =  
+USER_ID_FIELD = user_id
+ITEM_ID_FIELD = item_id
+RATING_FIELD = rating
+TIME_FIELD = timestamp
+seq_len = None
+LABEL_FIELD = label
+threshold = None
+NEG_PREFIX = neg_
+load_col = {'inter': ['user_id', 'item_id', 'timestamp']}
+unload_col = None
+unused_col = None
+additional_feat_suffix = None
+rm_dup_inter = None
+val_interval = None
+filter_inter_by_user_or_item = True
+user_inter_num_interval = [0,inf)
+item_inter_num_interval = [0,inf)
+alias_of_user_id = None
+alias_of_item_id = None
+alias_of_entity_id = None
+alias_of_relation_id = None
+preload_weight = None
+normalize_field = None
+normalize_all = None
+ITEM_LIST_LENGTH_FIELD = item_length
+LIST_SUFFIX = _list
+MAX_ITEM_LIST_LENGTH = 13
+POSITION_FIELD = position_id
+HEAD_ENTITY_ID_FIELD = head_id
+TAIL_ENTITY_ID_FIELD = tail_id
+RELATION_ID_FIELD = relation_id
+ENTITY_ID_FIELD = entity_id
+benchmark_filename = None
+
+Other Hyper Parameters: 
+worker = 0
+wandb_project = recbole
+shuffle = True
+require_pow = False
+enable_amp = False
+enable_scaler = False
+transform = None
+n_layers = 2
+n_heads = 2
+hidden_size = 2048
+inner_size = 256
+hidden_dropout_prob = 0.1
+attn_dropout_prob = 0.1
+hidden_act = gelu
+layer_norm_eps = 1e-12
+initializer_range = 0.02
+loss_type = CE
+numerical_features = []
+discretization = None
+kg_reverse_r = False
+entity_kg_num_interval = [0,inf)
+relation_kg_num_interval = [0,inf)
+MODEL_TYPE = ModelType.SEQUENTIAL
+state_tracker = ['Tensorboard']
+MODEL_INPUT_TYPE = InputType.POINTWISE
+eval_type = EvaluatorType.RANKING
+single_spec = True
+local_rank = 0
+device = cuda
+valid_neg_sample_args = {'distribution': 'uniform', 'sample_num': 100}
+test_neg_sample_args = {'distribution': 'uniform', 'sample_num': 'none'}
+
+
+Wed 13 May 2026 10:28:00 INFO  microlens100k
+The number of users: 100001
+Average actions of users: 7.19405
+The number of items: 19739
+Average actions of items: 36.44771506738272
+The number of inters: 719405
+The sparsity of the dataset: 99.96355449587001%
+Remain Fields: ['user_id', 'item_id', 'timestamp']
+Wed 13 May 2026 10:28:12 INFO  [Training]: train_batch_size = [512] train_neg_sample_args: [{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}]
+Wed 13 May 2026 10:28:12 INFO  [Evaluation]: eval_batch_size = [2048] eval_args: [{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}]
+Wed 13 May 2026 10:28:12 INFO  SASRec(
+  (item_embedding): Embedding(19739, 2048, padding_idx=0)
+  (position_embedding): Embedding(13, 2048)
+  (trm_encoder): TransformerEncoder(
+    (layer): ModuleList(
+      (0-1): 2 x TransformerLayer(
+        (multi_head_attention): MultiHeadAttention(
+          (query): Linear(in_features=2048, out_features=2048, bias=True)
+          (key): Linear(in_features=2048, out_features=2048, bias=True)
+          (value): Linear(in_features=2048, out_features=2048, bias=True)
+          (softmax): Softmax(dim=-1)
+          (attn_dropout): Dropout(p=0.1, inplace=False)
+          (dense): Linear(in_features=2048, out_features=2048, bias=True)
+          (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+          (out_dropout): Dropout(p=0.1, inplace=False)
+        )
+        (feed_forward): FeedForward(
+          (dense_1): Linear(in_features=2048, out_features=256, bias=True)
+          (dense_2): Linear(in_features=256, out_features=2048, bias=True)
+          (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+        )
+      )
+    )
+  )
+  (LayerNorm): LayerNorm((2048,), eps=1e-12, elementwise_affine=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (loss_fct): CrossEntropyLoss()
+)
+Trainable parameters: 76145152
+Wed 13 May 2026 10:28:13 INFO  FLOPs: 463794104.0
+Wed 13 May 2026 10:31:53 INFO  epoch 0 training [time: 219.07s, train loss: 8386.2805]
+Wed 13 May 2026 10:35:32 INFO  epoch 1 training [time: 218.79s, train loss: 7894.8661]
+Wed 13 May 2026 10:39:11 INFO  epoch 2 training [time: 218.74s, train loss: 7818.9246]
+Wed 13 May 2026 10:42:50 INFO  epoch 3 training [time: 218.90s, train loss: 7788.6111]
+Wed 13 May 2026 10:46:28 INFO  epoch 4 training [time: 218.83s, train loss: 7768.8287]
+Wed 13 May 2026 11:10:06 INFO  epoch 4 evaluating [time: 1417.66s, valid_score: 0.161800]
+Wed 13 May 2026 11:10:06 INFO  valid result: 
+hit@10 : 0.3134    hit@20 : 0.4894    ndcg@10 : 0.1618    ndcg@20 : 0.206
+Wed 13 May 2026 11:10:07 INFO  Saving current: ./checkpoints/SASRec-May-13-2026_10-28-13.pth
+Wed 13 May 2026 11:13:46 INFO  epoch 5 training [time: 218.84s, train loss: 7754.8356]
+Wed 13 May 2026 11:17:25 INFO  epoch 6 training [time: 218.75s, train loss: 7739.2144]
+Wed 13 May 2026 11:21:03 INFO  epoch 7 training [time: 218.73s, train loss: 7719.0921]
+Wed 13 May 2026 11:24:42 INFO  epoch 8 training [time: 218.75s, train loss: 7694.2425]
+Wed 13 May 2026 11:28:21 INFO  epoch 9 training [time: 218.80s, train loss: 7663.9219]
+Wed 13 May 2026 11:51:58 INFO  epoch 9 evaluating [time: 1417.56s, valid_score: 0.174800]
+Wed 13 May 2026 11:51:58 INFO  valid result: 
+hit@10 : 0.3266    hit@20 : 0.5065    ndcg@10 : 0.1748    ndcg@20 : 0.2201
+Wed 13 May 2026 11:51:59 INFO  Saving current: ./checkpoints/SASRec-May-13-2026_10-28-13.pth
+Wed 13 May 2026 11:55:40 INFO  epoch 10 training [time: 220.63s, train loss: 7627.9929]
+Wed 13 May 2026 11:59:26 INFO  epoch 11 training [time: 225.54s, train loss: 7546.9964]
+Wed 13 May 2026 12:03:10 INFO  epoch 12 training [time: 224.75s, train loss: 7488.7478]
+Wed 13 May 2026 12:06:57 INFO  epoch 13 training [time: 226.92s, train loss: 7476.0024]
+Wed 13 May 2026 12:10:43 INFO  epoch 14 training [time: 225.56s, train loss: 7475.7561]
+Wed 13 May 2026 12:34:21 INFO  epoch 14 evaluating [time: 1418.01s, valid_score: 0.284000]
+Wed 13 May 2026 12:34:21 INFO  valid result: 
+hit@10 : 0.4986    hit@20 : 0.6887    ndcg@10 : 0.284    ndcg@20 : 0.332
+Wed 13 May 2026 12:34:22 INFO  Saving current: ./checkpoints/SASRec-May-13-2026_10-28-13.pth
+Wed 13 May 2026 12:38:01 INFO  epoch 15 training [time: 218.88s, train loss: 7478.9063]
+Wed 13 May 2026 12:41:40 INFO  epoch 16 training [time: 219.00s, train loss: 7483.5611]
+Wed 13 May 2026 12:45:19 INFO  epoch 17 training [time: 218.82s, train loss: 7488.8809]
+Wed 13 May 2026 12:48:58 INFO  epoch 18 training [time: 218.92s, train loss: 7495.0902]
+Wed 13 May 2026 12:52:37 INFO  epoch 19 training [time: 219.15s, train loss: 7501.6223]
+Wed 13 May 2026 13:16:15 INFO  epoch 19 evaluating [time: 1417.80s, valid_score: 0.285600]
+Wed 13 May 2026 13:16:15 INFO  valid result: 
+hit@10 : 0.5022    hit@20 : 0.6952    ndcg@10 : 0.2856    ndcg@20 : 0.3343
+Wed 13 May 2026 13:16:16 INFO  Saving current: ./checkpoints/SASRec-May-13-2026_10-28-13.pth
+Wed 13 May 2026 13:19:55 INFO  epoch 20 training [time: 219.38s, train loss: 7507.8560]
+Wed 13 May 2026 13:23:41 INFO  epoch 21 training [time: 225.42s, train loss: 7514.4994]
+Wed 13 May 2026 13:27:25 INFO  epoch 22 training [time: 224.46s, train loss: 7520.8255]
+Wed 13 May 2026 13:31:10 INFO  epoch 23 training [time: 224.76s, train loss: 7527.7622]
+Wed 13 May 2026 13:34:53 INFO  epoch 24 training [time: 223.43s, train loss: 7534.6140]
+Wed 13 May 2026 13:58:31 INFO  epoch 24 evaluating [time: 1418.11s, valid_score: 0.282300]
+Wed 13 May 2026 13:58:31 INFO  valid result: 
+hit@10 : 0.4974    hit@20 : 0.6897    ndcg@10 : 0.2823    ndcg@20 : 0.3309
+Wed 13 May 2026 14:02:10 INFO  epoch 25 training [time: 218.89s, train loss: 7541.2403]
+Wed 13 May 2026 14:05:49 INFO  epoch 26 training [time: 218.82s, train loss: 7547.7135]
+Wed 13 May 2026 14:09:28 INFO  epoch 27 training [time: 218.78s, train loss: 7554.5307]
+Wed 13 May 2026 14:13:07 INFO  epoch 28 training [time: 218.89s, train loss: 7561.3617]
+Wed 13 May 2026 14:16:45 INFO  epoch 29 training [time: 218.78s, train loss: 7568.5475]
+Wed 13 May 2026 14:40:23 INFO  epoch 29 evaluating [time: 1417.61s, valid_score: 0.275000]
+Wed 13 May 2026 14:40:23 INFO  valid result: 
+hit@10 : 0.489    hit@20 : 0.6842    ndcg@10 : 0.275    ndcg@20 : 0.3243
+Wed 13 May 2026 14:44:02 INFO  epoch 30 training [time: 218.74s, train loss: 7575.8085]
+Wed 13 May 2026 14:47:40 INFO  epoch 31 training [time: 218.71s, train loss: 7582.5362]
+Wed 13 May 2026 14:51:19 INFO  epoch 32 training [time: 218.70s, train loss: 7589.9072]
+Wed 13 May 2026 14:54:58 INFO  epoch 33 training [time: 218.82s, train loss: 7596.3936]
+Wed 13 May 2026 14:58:37 INFO  epoch 34 training [time: 218.75s, train loss: 7604.2584]
+Wed 13 May 2026 15:22:14 INFO  epoch 34 evaluating [time: 1417.55s, valid_score: 0.270200]
+Wed 13 May 2026 15:22:14 INFO  valid result: 
+hit@10 : 0.4792    hit@20 : 0.6739    ndcg@10 : 0.2702    ndcg@20 : 0.3193
+Wed 13 May 2026 15:25:53 INFO  epoch 35 training [time: 218.74s, train loss: 7610.8858]
+Wed 13 May 2026 15:29:32 INFO  epoch 36 training [time: 218.63s, train loss: 7617.9694]
+Wed 13 May 2026 15:33:10 INFO  epoch 37 training [time: 218.74s, train loss: 7625.4831]
+Wed 13 May 2026 15:36:49 INFO  epoch 38 training [time: 218.75s, train loss: 7632.3428]
+Wed 13 May 2026 15:40:28 INFO  epoch 39 training [time: 218.79s, train loss: 7640.5093]
+Wed 13 May 2026 16:04:05 INFO  epoch 39 evaluating [time: 1417.53s, valid_score: 0.265200]
+Wed 13 May 2026 16:04:05 INFO  valid result: 
+hit@10 : 0.4753    hit@20 : 0.6722    ndcg@10 : 0.2652    ndcg@20 : 0.3149
+Wed 13 May 2026 16:07:44 INFO  epoch 40 training [time: 218.71s, train loss: 7647.0743]
+Wed 13 May 2026 16:11:23 INFO  epoch 41 training [time: 218.76s, train loss: 7654.6452]
+Wed 13 May 2026 16:15:02 INFO  epoch 42 training [time: 218.65s, train loss: 7661.4627]
+Wed 13 May 2026 16:18:40 INFO  epoch 43 training [time: 218.88s, train loss: 7668.9185]
+Wed 13 May 2026 16:22:19 INFO  epoch 44 training [time: 218.70s, train loss: 7676.9839]
+Wed 13 May 2026 16:45:57 INFO  epoch 44 evaluating [time: 1417.52s, valid_score: 0.261500]
+Wed 13 May 2026 16:45:57 INFO  valid result: 
+hit@10 : 0.4687    hit@20 : 0.6651    ndcg@10 : 0.2615    ndcg@20 : 0.3111
+Wed 13 May 2026 16:49:35 INFO  epoch 45 training [time: 218.62s, train loss: 7684.0056]
+Wed 13 May 2026 16:53:14 INFO  epoch 46 training [time: 218.77s, train loss: 7691.3315]
+Wed 13 May 2026 16:56:53 INFO  epoch 47 training [time: 218.95s, train loss: 7699.1263]
+Wed 13 May 2026 17:00:32 INFO  epoch 48 training [time: 218.84s, train loss: 7706.7605]
+Wed 13 May 2026 17:04:11 INFO  epoch 49 training [time: 218.72s, train loss: 7714.5952]
+Wed 13 May 2026 17:27:48 INFO  epoch 49 evaluating [time: 1417.40s, valid_score: 0.258600]
+Wed 13 May 2026 17:27:48 INFO  valid result: 
+hit@10 : 0.4654    hit@20 : 0.6614    ndcg@10 : 0.2586    ndcg@20 : 0.308
+Wed 13 May 2026 17:31:27 INFO  epoch 50 training [time: 218.78s, train loss: 7722.0189]
+Wed 13 May 2026 17:35:06 INFO  epoch 51 training [time: 218.74s, train loss: 7729.5226]
+Wed 13 May 2026 17:38:45 INFO  epoch 52 training [time: 218.97s, train loss: 7736.8858]
+Wed 13 May 2026 17:42:23 INFO  epoch 53 training [time: 218.70s, train loss: 7744.5557]
+Wed 13 May 2026 17:46:02 INFO  epoch 54 training [time: 218.70s, train loss: 7752.3260]
+Wed 13 May 2026 18:09:39 INFO  epoch 54 evaluating [time: 1417.50s, valid_score: 0.254600]
+Wed 13 May 2026 18:09:39 INFO  valid result: 
+hit@10 : 0.459    hit@20 : 0.6573    ndcg@10 : 0.2546    ndcg@20 : 0.3046
+Wed 13 May 2026 18:13:18 INFO  epoch 55 training [time: 218.73s, train loss: 7760.0968]
+Wed 13 May 2026 18:16:57 INFO  epoch 56 training [time: 218.72s, train loss: 7768.0858]
+Wed 13 May 2026 18:20:36 INFO  epoch 57 training [time: 218.73s, train loss: 7775.3790]
+Wed 13 May 2026 18:24:14 INFO  epoch 58 training [time: 218.87s, train loss: 7783.6242]
+Wed 13 May 2026 18:27:53 INFO  epoch 59 training [time: 218.92s, train loss: 7791.3907]
+Wed 13 May 2026 18:51:31 INFO  epoch 59 evaluating [time: 1417.43s, valid_score: 0.246000]
+Wed 13 May 2026 18:51:31 INFO  valid result: 
+hit@10 : 0.4471    hit@20 : 0.6432    ndcg@10 : 0.246    ndcg@20 : 0.2954
+Wed 13 May 2026 18:55:10 INFO  epoch 60 training [time: 218.74s, train loss: 7798.8647]
+Wed 13 May 2026 18:58:48 INFO  epoch 61 training [time: 218.74s, train loss: 7806.7351]
+Wed 13 May 2026 19:02:27 INFO  epoch 62 training [time: 218.75s, train loss: 7814.3322]
+Wed 13 May 2026 19:06:06 INFO  epoch 63 training [time: 219.02s, train loss: 7822.0169]
+Wed 13 May 2026 19:09:45 INFO  epoch 64 training [time: 218.64s, train loss: 7829.7829]
+Wed 13 May 2026 19:33:22 INFO  epoch 64 evaluating [time: 1417.47s, valid_score: 0.241200]
+Wed 13 May 2026 19:33:22 INFO  valid result: 
+hit@10 : 0.4396    hit@20 : 0.6364    ndcg@10 : 0.2412    ndcg@20 : 0.2908
+Wed 13 May 2026 19:37:01 INFO  epoch 65 training [time: 218.73s, train loss: 7837.5079]
+Wed 13 May 2026 19:40:40 INFO  epoch 66 training [time: 218.73s, train loss: 7845.2159]
+Wed 13 May 2026 19:44:18 INFO  epoch 67 training [time: 218.71s, train loss: 7852.4028]
+Wed 13 May 2026 19:47:57 INFO  epoch 68 training [time: 218.64s, train loss: 7860.0763]
+Wed 13 May 2026 19:51:36 INFO  epoch 69 training [time: 218.69s, train loss: 7867.7263]
+Wed 13 May 2026 20:15:13 INFO  epoch 69 evaluating [time: 1417.71s, valid_score: 0.236700]
+Wed 13 May 2026 20:15:13 INFO  valid result: 
+hit@10 : 0.4323    hit@20 : 0.6293    ndcg@10 : 0.2367    ndcg@20 : 0.2863
+Wed 13 May 2026 20:18:52 INFO  epoch 70 training [time: 218.78s, train loss: 7875.3131]
+Wed 13 May 2026 20:22:31 INFO  epoch 71 training [time: 218.76s, train loss: 7882.8010]
+Wed 13 May 2026 20:26:10 INFO  epoch 72 training [time: 218.72s, train loss: 7890.0818]
+Wed 13 May 2026 20:29:48 INFO  epoch 73 training [time: 218.82s, train loss: 7897.1331]
+Wed 13 May 2026 20:33:27 INFO  epoch 74 training [time: 218.67s, train loss: 7904.6772]
+Wed 13 May 2026 20:57:05 INFO  epoch 74 evaluating [time: 1417.54s, valid_score: 0.227900]
+Wed 13 May 2026 20:57:05 INFO  valid result: 
+hit@10 : 0.4194    hit@20 : 0.6177    ndcg@10 : 0.2279    ndcg@20 : 0.2779
+Wed 13 May 2026 20:57:05 INFO  Finished training, best eval result in epoch 19
+Wed 13 May 2026 20:57:05 INFO  Loading model structure and parameters from ./checkpoints/SASRec-May-13-2026_10-28-13.pth
+Wed 13 May 2026 20:57:21 INFO  The running environment of this training is as follows:
++-------------+------------------+
+| Environment |      Usage       |
++=============+==================+
+| CPU         |      0.20 %      |
++-------------+------------------+
+| GPU         |  7.36 G/39.25 G  |
++-------------+------------------+
+| Memory      | 2.00 G/2015.65 G |
++-------------+------------------+
+Wed 13 May 2026 20:57:21 INFO  best valid : OrderedDict([('hit@10', 0.5022), ('hit@20', 0.6952), ('ndcg@10', 0.2856), ('ndcg@20', 0.3343)])
+Wed 13 May 2026 20:57:21 INFO  test result: OrderedDict([('hit@10', 0.012), ('hit@20', 0.0217), ('ndcg@10', 0.0056), ('ndcg@20', 0.0081)])
