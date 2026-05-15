@@ -30,7 +30,7 @@ def parse_log(log_path):
 
     train_pat = re.compile(r"epoch (\d+) training \[time:.+, train loss: ([\d.]+)\]")
     eval_pat  = re.compile(r"epoch (\d+) evaluating \[time:.+, valid_score: ([\d.]+)\]")
-    kv_pat    = re.compile(r"([\w@]+) : ([\d.]+)")
+    kv_pat    = re.compile(r"'([\w@]+)',\s*([\d.]+)")
 
     with open(log_path) as f:
         lines = f.readlines()
