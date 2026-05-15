@@ -31,8 +31,8 @@ with open(LOG_PATH) as f:
 best_valid = {"hit@10": 0.0697, "hit@20": 0.0960, "ndcg@10": 0.0376, "ndcg@20": 0.0442}
 test_result = {"hit@10": 0.0507, "hit@20": 0.0728, "ndcg@10": 0.0273, "ndcg@20": 0.0328}
 
-# paper reference (논문 기준 ~55 % 성능이므로 역산)
-paper_ndcg10 = best_valid["ndcg@10"] / 0.55
+# paper reference (Table 2, SASRec IDRec)
+paper_ndcg10 = 0.0517
 
 # ── plot ───────────────────────────────────────────────────────────────────
 fig = plt.figure(figsize=(14, 10))
@@ -58,7 +58,7 @@ best_score = max(eval_scores)
 ax2.axvline(best_epoch, color="#FF5722", linestyle="--", linewidth=1, alpha=0.7,
             label=f"Best epoch={best_epoch}")
 ax2.axhline(paper_ndcg10, color="#9C27B0", linestyle=":", linewidth=1.5, alpha=0.8,
-            label=f"Paper ref ≈ {paper_ndcg10:.4f}")
+            label=f"Paper NDCG@10 = {paper_ndcg10:.4f}")
 ax2.set_xlabel("Epoch")
 ax2.set_ylabel("NDCG@10")
 ax2.set_title("Validation NDCG@10")
@@ -104,7 +104,7 @@ ax4.grid(True, alpha=0.3, axis="y")
 # annotation
 fig.text(0.5, 0.01,
          f"Best valid NDCG@10={best_score:.4f}  |  Test NDCG@10={test_result['ndcg@10']:.4f}"
-         f"  |  Paper ref NDCG@10≈{paper_ndcg10:.4f}  (achieved ~55%)",
+         f"  |  Paper NDCG@10={paper_ndcg10:.4f}  (achieved {test_result['ndcg@10']/paper_ndcg10*100:.1f}%)",
          ha="center", fontsize=9, color="#555555")
 
 plt.savefig(OUTPUT_PATH, dpi=150, bbox_inches="tight")
